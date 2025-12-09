@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(copy \"C:\\Users\\comiti_g\\Downloads\\le_b_natale-removebg-preview.png\" \"c:\\These\\Cours_fac\\2025-2026\\bot_tp_front\\bisgambia-avatar.png\")"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

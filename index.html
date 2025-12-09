@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BisgambIA - Assistant de Noël</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎄 BisgambIA 🎅</h1>
+            <div class="header-controls">
+                <select id="promptType">
+                    <option value="TP_ASSISTANT">Assistant TP</option>
+                    <option value="PROGRAMMING_TUTOR">Tuteur Programmation</option>
+                    <option value="DEBUG_HELPER">Aide au Debug</option>
+                </select>
+                <button id="resetBtn" class="btn-secondary">Nouvelle session</button>
+            </div>
+        </header>
+
+        <div class="status" id="status">
+            <span class="status-indicator"></span>
+            <span id="statusText">Connexion...</span>
+        </div>
+
+        <div class="chat-container">
+            <div class="messages" id="messages">
+                <div class="message bot-message">
+                    <img src="bisgambia-avatar.png" alt="BisgambIA" class="bot-avatar">
+                    <div class="message-content">
+                        <strong>🎅 BisgambIA:</strong>
+                        <p>Ho ho ho! Joyeux Noël! Je suis BisgambIA, votre assistant de Noël pour les TP. Comment puis-je vous aider aujourd'hui?</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="input-container">
+                <textarea
+                    id="messageInput"
+                    placeholder="Tapez votre message ici..."
+                    rows="3"
+                ></textarea>
+                <button id="sendBtn" class="btn-primary">
+                    <span>Envoyer</span>
+                </button>
+            </div>
+        </div>
+
+        <footer>
+            <div class="stats" id="stats">
+                <span>Messages: <strong id="msgCount">0</strong></span>
+                <span>Session: <strong id="sessionInfo">Non initialisée</strong></span>
+            </div>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
