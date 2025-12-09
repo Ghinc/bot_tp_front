@@ -164,37 +164,49 @@ async function sendMessage() {
 
 // Fonction pour formater le markdown basique
 function formatMarkdown(text) {
+    if (!text) return '<p></p>';
+
+    // Échapper temporairement les balises HTML existantes
+    text = text.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+    // Remplacer les blocs de code ``` (AVANT tout le reste)
+    text = text.replace(/```(\w+)?\n([\s\S]*?)```/g, '<pre><code>$2</code></pre>');
+
+    // Remplacer le code inline ` (AVANT le gras et italique)
+    text = text.replace(/`([^`]+)`/g, '<code>$1</code>');
+
     // Remplacer les titres ###
     text = text.replace(/### (.*?)(\n|$)/g, '<h3>$1</h3>');
 
     // Remplacer les titres ##
     text = text.replace(/## (.*?)(\n|$)/g, '<h2>$1</h2>');
 
-    // Remplacer les listes à puces
+    // Remplacer le gras ** (AVANT l'italique *)
+    text = text.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+
+    // Remplacer l'italique * (mais pas dans les listes)
+    text = text.replace(/(?<![\s])\*([^*\n]+)\*(?![\s]*\n)/g, '<em>$1</em>');
+
+    // Remplacer les listes à puces (APRÈS italique)
     text = text.replace(/^[\s]*[-*] (.*?)$/gm, '<li>$1</li>');
 
-    // Envelopper les listes
-    text = text.replace(/(<li>.*?<\/li>)/gs, '<ul>$1</ul>');
+    // Envelopper les listes consécutives
+    text = text.replace(/(<li>.*?<\/li>\s*)+/gs, function(match) {
+        return '<ul>' + match + '</ul>';
+    });
 
-    // Remplacer les blocs de code ```
-    text = text.replace(/```(\w+)?\n([\s\S]*?)```/g, '<pre><code>$2</code></pre>');
+    // Remplacer les doubles sauts de ligne par des paragraphes
+    text = text.split('\n\n').map(para => {
+        if (para.trim() && !para.startsWith('<')) {
+            return '<p>' + para + '</p>';
+        }
+        return para;
+    }).join('');
 
-    // Remplacer le code inline `
-    text = text.replace(/`([^`]+)`/g, '<code>$1</code>');
-
-    // Remplacer le gras **
-    text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-
-    // Remplacer l'italique *
-    text = text.replace(/\*(.*?)\*/g, '<em>$1</em>');
-
-    // Remplacer les paragraphes (double saut de ligne)
-    text = text.replace(/\n\n/g, '</p><p>');
-
-    // Remplacer les simples retours à la ligne
+    // Remplacer les simples retours à la ligne par des <br>
     text = text.replace(/\n/g, '<br>');
 
-    return '<p>' + text + '</p>';
+    return text;
 }
 
 // Ajouter un message à l'interface
