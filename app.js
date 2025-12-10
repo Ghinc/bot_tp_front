@@ -166,11 +166,20 @@ async function sendMessage() {
 function formatMarkdown(text) {
     if (!text) return '<p></p>';
 
-    // Échapper temporairement les balises HTML existantes
-    text = text.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    // Stocker les blocs de code pour les traiter séparément
+    const codeBlocks = [];
+    let codeIndex = 0;
 
-    // Remplacer les blocs de code ``` (AVANT tout le reste)
-    text = text.replace(/```(\w+)?\n([\s\S]*?)```/g, '<pre><code>$2</code></pre>');
+    // Remplacer temporairement les blocs de code par des placeholders
+    text = text.replace(/```(\w+)?\n([\s\S]*?)```/g, (match, lang, code) => {
+        const placeholder = `__CODE_BLOCK_${codeIndex}__`;
+        codeBlocks[codeIndex] = { lang, code };
+        codeIndex++;
+        return placeholder;
+    });
+
+    // Échapper les balises HTML
+    text = text.replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
     // Remplacer le code inline ` (AVANT le gras et italique)
     text = text.replace(/`([^`]+)`/g, '<code>$1</code>');
@@ -197,7 +206,7 @@ function formatMarkdown(text) {
 
     // Remplacer les doubles sauts de ligne par des paragraphes
     text = text.split('\n\n').map(para => {
-        if (para.trim() && !para.startsWith('<')) {
+        if (para.trim() && !para.startsWith('<') && !para.includes('__CODE_BLOCK_')) {
             return '<p>' + para + '</p>';
         }
         return para;
@@ -206,8 +215,35 @@ function formatMarkdown(text) {
     // Remplacer les simples retours à la ligne par des <br>
     text = text.replace(/\n/g, '<br>');
 
+    // Restaurer les blocs de code avec bouton de copie
+    text = text.replace(/__CODE_BLOCK_(\d+)__/g, (match, index) => {
+        const { code } = codeBlocks[index];
+        const escapedCode = code.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        return `<div class="code-block-wrapper"><button class="copy-code-btn" onclick="copyCode(this)">Copier</button><pre><code>${escapedCode}</code></pre></div>`;
+    });
+
     return text;
 }
+
+// Fonction pour copier le code
+window.copyCode = function(button) {
+    const codeBlock = button.nextElementSibling.querySelector('code');
+    const code = codeBlock.textContent;
+
+    navigator.clipboard.writeText(code).then(() => {
+        const originalText = button.textContent;
+        button.textContent = 'Copié!';
+        button.classList.add('copied');
+
+        setTimeout(() => {
+            button.textContent = originalText;
+            button.classList.remove('copied');
+        }, 2000);
+    }).catch(err => {
+        console.error('Erreur de copie:', err);
+        button.textContent = 'Erreur';
+    });
+};
 
 // Ajouter un message à l'interface
 function addMessage(role, content) {
