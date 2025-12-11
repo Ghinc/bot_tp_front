@@ -271,8 +271,9 @@ function addMessage(role, content) {
         const formattedContent = formatMarkdown(content);
         messageContent.innerHTML += formattedContent;
     } else {
-        // Pour les messages utilisateur, garder le texte brut
-        const text = document.createElement('p');
+        // Pour les messages utilisateur, préserver les retours à la ligne
+        const text = document.createElement('pre');
+        text.className = 'user-text';
         text.textContent = content;
         messageContent.appendChild(text);
     }

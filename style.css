@@ -382,6 +382,17 @@ header h1 {
     background: rgba(255, 255, 255, 0.2);
 }
 
+.user-text {
+    font-family: inherit;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    margin: 8px 0 0 0;
+    padding: 0;
+    background: none;
+    font-size: 15px;
+    line-height: 1.6;
+}
+
 .message.loading .message-content {
     background: #f8f9fa;
     border: 1px solid #e9ecef;
